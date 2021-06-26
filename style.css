@@ -1,0 +1,692 @@
+/* RESET - removendo estilos que vem do navegador */
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+/* Quando altero o box-sizing para border-box, eu quero que o meu box seja contado  a partir da borda, nao a partir do padding*/
+
+img {
+  width: 100%;
+  height: auto;
+}
+/* A imagem ter altura automática simboliza que ela irá se adaptar de acordo com a largura do dispositivo */
+
+a {
+  text-decoration: none;
+}
+
+ul {
+  list-style: none;
+}
+/* Dando um reset nas configurações dos links */
+
+/* VARIABLES */
+
+:root {
+  --header-height: 4.5rem;
+
+  /* colors */
+  --hue: 200;
+  /* HSL color mode */
+  --base-color: hsl(var(--hue) 36% 57%);
+  --base-color-second: hsl(var(--hue) 65% 88%);
+  --base-color-alt: hsl(var(--hue) 57% 53%);
+  --title-color: hsl(var(--hue) 41% 10%);
+  --text-color: hsl(0 0% 46%);
+  --text-color-light: hsl(0 0% 98%);
+  --body-color: hsl(0 0% 98%);
+
+  /* fonts */
+  --title-font-size: 1.875rem;
+  --subtitle-font-size: 1rem;
+
+  --title-font: 'Poppins', sans-serif;
+  --body-font: 'DM Sans', sans-serif;
+}
+/* Ao definir alguns estilos, como cor, por exemplo, como uma variável, torna-se muito mais fácil a adaptação do site para diferentes estilos*/
+
+/* BASE */
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font: 400 1rem var(--body-font); /* O primeiro e segundo parâmetro costumam ser padrões */
+  color: var(--text-color);
+  background: var(--body-color);
+  -webkit-font-smoothing: antialiased; /* Depende do navegador (nao é possível em todos) */
+}
+
+.title {
+  font: 700 var(--title-font-size) var(--title-font); /* O 700 é caso for bold. O sans-serif é a fonte alternativa, caso esta não caregue */
+  color: var(--title-color);
+  -webkit-font-smoothing: auto;
+}
+
+.button {
+  background-color: var(--base-color);
+  color: var(--text-color-light);
+  height: 3.5rem; /* 56/16 */
+  display: inline-flex; /* INLINE: Não vai receber nem altura nem largura que extrapole a largura do conteúdo. BLOCK: pode receber altura. INLINE-BLOCK, a altura pode ser alterada mas ele vai manter o inline para sua largura. INLINE-FLEX, posso centralizar no meio, por exemplo */
+  align-items: center;
+  padding: 0 2rem;
+  border-radius: 0.25rem;
+  font: 500 1rem var(--body-font);
+  transition: background 0.3s;
+}
+
+.button:hover {
+  background-color: var(--base-color-alt);
+}
+
+.divider-1 {
+  height: 1px;
+  background: linear-gradient(
+    270deg,
+    hsla(var(--hue), 36%, 57%, 1),
+    hsla(var(--hue), 65%, 88%, 0.34)
+  );
+}
+
+.divider-2 {
+  height: 1px;
+  background: linear-gradient(
+    270deg,
+    hsla(var(--hue), 65%, 88%, 0.34),
+    hsla(var(--hue), 36%, 57%, 1)
+  );
+}
+
+/* NAVIGATION */
+nav {
+  height: var(--header-height);
+  display: flex;
+  width: 100%;
+  justify-content: space-between;
+  align-items: center;
+}
+/* (agora está como variável, mas antes era 4.5)Observe que acima o número do height é muito específico, isto porque ele é calculado com certos parâmetros. O valor em questão foi obtido a partir da divisão de 72 por 16. O primeiro número é a altura definida no Figma, em pixels.  Já o segundo é o critério de conversão para rem.
+
+
+OBS: Tudo no figma é definido em pixel (uma unidade fixa). 1 rem (root element) equivale a 16 pixels.
+
+Então eu posso mudar o root element e tudo que estiver seguindo este parâmetro vai mudar.
+*/
+
+nav ul li {
+  text-align: center;
+}
+
+nav ul li a {
+  transition: color 0.2s; /* Várias propriedades tem transição. Exemplos: width, heigth, background, color. Neste caso, especificamos para color */
+  position: relative; /* Isto porque no ::after temos um position absolute, que será relativo a este elemento */
+}
+
+nav ul li a:hover,
+nav ul li a.active {
+  color: var(--base-color);
+}
+
+nav ul li a::after {
+  content: '';
+  width: 0%;
+  height: 2px;
+  background: var(--base-color);
+
+  position: absolute; /* Será absoluto em relação ao próximo pai dele que tiver um position relative */
+  left: 0;
+  bottom: -1.5rem; /* Para ficar lá em baixo. Negativo para ir para baixo. O valor em questão foi obtido no Figma. */
+  transition: width 0.2s;
+}
+/* After também é um pseudo-codigo (assim como o before). Só que agora é adicionado depois. OBS: toda vez tem que colocar um content */
+
+nav ul li a:hover::after,
+nav ul li a.active::after {
+  width: 100%;
+}
+/* Acima aplicamos uma estratégia para a barrinha aparecer com transição */
+
+nav .menu {
+  opacity: 0; /* Deixando opaco */
+  visibility: hidden; /* Deixando escondido */
+
+  top: -20rem; /* Para fazer a transição do texto quando abrir o menu*/
+  transition: 0.4s;
+}
+
+nav .menu ul {
+  display: none; /* Isso porque ao fim da transição do menu, um pedaço do texto aparece*/
+}
+
+/* Mostrar menu */
+nav.show .menu {
+  opacity: 1;
+  visibility: visible;
+  background: var(--body-color);
+  height: 100vh; /* view port é tudo aquilo que você vê na tela, é a largura do dispositivo. Ou seja, estamos pegando 100% da tela para deixá-la com funco branco. */
+  width: 100vw; /* Agora termina com w porque estamos falando de width */
+  position: fixed; /* Por que o fixed? Porque faz a coisa ficar fixa na página, posso rolar a tela que ele irá continuar ali. */
+  top: 0;
+  left: 0; /* Esses dois últimos são para indicar que ele deve estar no começo da página */
+
+  display: grid;
+  place-content: center; /* Deixa o conteúdo bem no meio da tela */
+}
+/* Observe que não há espaço entre o nav e a classe show. Isto porque não estamos buscando uma classe show dentro  do escopo da tag nav, mas sim a classe show na própria tag nav */
+
+nav.show .menu ul {
+  display: grid;
+}
+
+nav.show ul.grid {
+  gap: 4rem;
+}
+
+/* Toggle menu */
+.toggle {
+  color: var(--base-color);
+  font-size: 1.5rem;
+  cursor: pointer;
+}
+
+nav .icon-close {
+  visibility: hidden;
+  opacity: 0;
+
+  position: absolute;
+  top: -1.5rem;
+  right: 1.5rem;
+
+  transition: 0.2s;
+}
+
+nav.show div.icon-close {
+  visibility: visible;
+  opacity: 1;
+  top: 1.5rem; /* Assim, juntamente com o top: -1.5rem do select anterior, fazemos com que o x apareça gradualmente */
+}
+
+/* LOGO */
+
+.logo {
+  font: 700 1.31rem var(--title-font); /* 1.31 = 21/16 */
+  color: var(--title-color);
+}
+
+.logo span {
+  color: var(--base-color);
+}
+
+.logo-alt span {
+  color: var(--body-color);
+}
+
+/* LAYOUT */
+#header {
+  border-bottom: 1px solid #e4e4e4;
+  margin-bottom: 2rem;
+  display: flex;
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  background-color: var(--body-color);
+}
+
+#header.scroll {
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.15);
+}
+/* Acima aplicamos a lógica de mostrar um sombreado quando a pessoa der scrol na página */
+
+/*
+main {
+  margin-top: calc(var(--header-height) + 2rem);
+}*/
+/* Acima estamos definindo a distância do conteúdo main para o conteúdo do cabeçalho. Note que a altura será, tendo em vista que o header está como fixed, a altura do próprio header + a distância entre o header e o conteúdo do main, que é 32. */
+
+.container {
+  margin-left: 1.5rem; /* No Figma podemos observar que no mobile a margem com as laterais é de 24px. Portanto, o  número utilizado, 1.5, nada mais é do que 24/16 */
+  margin-right: 1.5rem;
+}
+
+.grid {
+  display: grid;
+  gap: 2rem; /* Distância entre imagem e texto é 32px no figma. Portanto 32/16 */
+}
+
+.section {
+  padding: calc(5rem + var(--header-height)) 0; /* 80/16 em cima e em baixo*/
+}
+
+.section .title {
+  margin-bottom: 2rem;
+}
+
+.section .subtitle {
+  font-size: var(--subtitle-font-size);
+}
+
+.section header {
+  margin-bottom: 4rem;
+}
+
+.section header strong {
+  color: var(--base-color);
+}
+
+/* HOME */
+
+#home {
+  overflow: hidden; /* Overflow significa transbordar, o modo hidden significa esconder o que transbordar*/
+}
+
+#home .container {
+  margin: 0;
+}
+
+#home .image {
+  position: relative;
+}
+
+#home .image::before {
+  content: '';
+  height: 100%;
+  width: 100%;
+  background: var(--base-color-second);
+  position: absolute; /* Quando o posicionamento é absoluto, acontece algo diferente na página. Ele é absoluto dentro da página toda. É um problema porque eu não vou saber como posicionar ele se a página ficar maior ou menor. Por isso que no #home .image o posicionamento foi relativo */
+  z-index: 0; /* Esta também é uma propriedade exclusiva do position. Ela se refere ao eixo z, o eixo de profundidade em relação aos eixos x e y, uma coisa em cima da outra */
+  top: -16.8%; /* Utilizando como parâmetro a imagem desktop, a altura da parte sombreada é 405 px, e a distância de altura entre a parte sombreada da imagem e da imagem é de 68px. Portanto, devemos fazer uma regra de 3 para avaliarmos a porcentagem que colocaremos aqui. 405 é 100%, quantos % é 68. A resposta é 16.8 */
+  left: 16.7%;
+}
+/* Este código significa que pelo css eu posso criar um elemento fictício aqui. Dentro da imagem, no caso */
+
+#home .image img {
+  position: relative;
+  right: 2.93rem; /* Empurra a imagem para a esquerda um pouco*/
+}
+/* Neste css acima nós estamos posicionando a imagem mais à esquerda, considerando que a distância dela até o canto direito é de 47px*/
+
+#home .image img,
+#home .image::before {
+  border-radius: 0.25rem;
+}
+
+#home .text {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  text-align: center;
+}
+
+#home .text .title {
+  margin-bottom: 1rem;
+}
+
+#home .text p {
+  margin-bottom: 2rem;
+  max-width: 100%; /* Para não ter a barra de rolagem lateral */
+}
+
+/* ABOUT */
+#about {
+  background: white;
+}
+
+#about .container {
+  margin: 0;
+}
+
+#about .image {
+  position: relative;
+}
+
+#about .image::before {
+  content: '';
+  height: 100%;
+  width: 100%;
+  background: var(--base-color-second);
+  position: absolute;
+  z-index: 0;
+  top: -8.3%;
+  left: -33%;
+}
+/* 192*100/581 = cálculo da regra de 3 */
+/* 34*100/405 */
+
+#about .image img {
+  position: relative;
+}
+
+#about .image img,
+#about .image::before {
+  border-radius: 0.25rem;
+}
+
+#about .text {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+}
+
+/* SERVICES */
+.cards.grid {
+  gap: 1.5rem;
+}
+
+.card {
+  padding: 3.625rem 2rem; /* 58/16 */
+  box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.08);
+  border-bottom: 0.25rem solid var(--base-color);
+  border-radius: 0.25rem 0.25rem 0 0; /* Colocando bordinha na parte de cima e na de baixo não */
+  text-align: center;
+}
+
+.card i {
+  display: block;
+  margin-bottom: 1.5rem;
+  font-size: 5rem; /* 80/16 */
+  color: var(--base-color);
+}
+
+.card .title {
+  font-size: 1.5rem;
+  margin-bottom: 0.75rem;
+}
+
+/* TESTIMONIALS */
+#testimonials {
+  background: white;
+}
+
+#testimonials .container {
+  margin-left: 0;
+  margin-right: 0;
+}
+
+#testimonials header {
+  margin-left: 1.5rem;
+  margin-right: 1.5rem;
+  margin-bottom: 0;
+}
+
+#testimonials blockquote {
+  padding: 2rem;
+  box-shadow: 0px 0px 12px rgba(247, 76, 76, 0.08);
+  border-radius: 0.25rem;
+}
+
+#testimonials blockquote p {
+  position: relative;
+  text-indent: 1.875rem; /* Para dar parágrafo */
+  margin-bottom: 1.5rem;
+  color: var(--title-color);
+}
+
+#testimonials blockquote p span {
+  font: 700 2.5rem serif;
+  position: absolute;
+  top: -0.375rem;
+  left: -1.875rem;
+  color: var(--base-color);
+}
+
+#testimonials cite {
+  display: flex;
+  align-items: center; /* Para centralizar imagem e texto*/
+  font-style: normal;
+}
+
+#testimonials cite img {
+  width: 2rem;
+  height: 2rem;
+  object-fit: cover; /* Nem sempre a imagem vai caber perfeitamente na dimensão quadrada. Por isso temos esse recurso que pega a imagem e encaixa (fit), cobrindo (cover)*/
+  clip-path: circle(); /* Para deixar a imagem circular */
+  margin-right: 0.5rem;
+}
+
+/* SWIPER */
+.swiper-slide {
+  height: auto;
+  padding: 4rem 1rem;
+}
+
+.swiper-pagination-bullet {
+  width: 0.75rem;
+  height: 0.75rem;
+}
+
+.swiper-pagination-bullet-active {
+  /* Bolinha ativa simbolizando qual imagem está selecionada */
+  background: var(--base-color);
+}
+
+/* CONTACT */
+#contact .grid {
+  gap: 4rem;
+}
+
+#contact .text p {
+  margin-bottom: 2rem;
+}
+
+#contact .button i,
+#contact ul li i {
+  font-size: 1.5rem;
+  margin-right: 0.625rem; /* 10/16 */
+}
+/* Acima temos um exemplo de como reaproveitar um trecho css. No caso de for o mesmo para 2 elementos diferentes */
+
+#contact ul.grid {
+  gap: 2rem;
+}
+
+#contact ul li {
+  display: flex;
+  align-items: center;
+}
+
+#contact ul li i {
+  color: var(--base-color);
+}
+
+/* FOOTER */
+footer {
+  background: var(--base-color);
+}
+
+footer.section {
+  padding: 4rem 0;
+}
+
+footer .logo {
+  display: inline-block; /* Por padrão a tag a tem display inline */
+  margin-bottom: 1.5rem;
+}
+
+footer .brand p {
+  color: var(--text-color-light);
+  margin-bottom: 0.75rem;
+}
+
+footer i {
+  font-size: 1.5rem;
+  color: var(--text-color-light);
+}
+
+footer .social a {
+  margin-right: 2rem;
+  /* Mostrando outra forma de fazer a mesma coisa
+  display: flex;
+  gap: 2rem;
+  */
+
+  transition: 0.3s;
+  display: inline-block; /* tag A por padrão é display inline. Display inline não recebe transform. Por isso colocamos inline-block */
+}
+/* Por padrão, o grid coloca os elementos um abaixo do outro. Aqui nós colocamos para que ele se organize em linha */
+
+footer .social a:hover {
+  transform: translateY(-8px);
+}
+
+/* Voltar ao topo (setinha) */
+.back-to-top {
+  background: var(--base-color);
+  color: var(--text-color-light);
+
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  padding: 0.5rem;
+  clip-path: circle();
+
+  font-size: 1.5rem;
+
+  visibility: hidden;
+  opacity: 0;
+  transition: 0.3s;
+  transform: translateY(100%); /* Serve para mexer no eixo y */
+}
+
+.back-to-top.show {
+  visibility: visible;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* RESPONSIVO */
+/* OBS: está relacionado à parte de viewport no html */
+@media (min-width: 1200px) {
+  main {
+    margin-top: var(--header-height);
+  }
+
+  .container {
+    max-width: 1120px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .section {
+    padding: 10rem 0;
+  }
+
+  .section header,
+  #testimonials header {
+    max-width: 32rem; /* Largura da caixa dividida por 16 */
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  .button {
+    height: 3.125rem;
+  }
+
+  /* NAVIGATION */
+
+  nav .menu {
+    opacity: 1;
+    visibility: visible;
+    top: 0;
+  }
+
+  nav .menu ul {
+    display: flex;
+    gap: 2rem;
+  }
+
+  nav .menu ul li a.title {
+    font: 400 1rem var(--body-font);
+    -webkit-font-smoothing: antialiased; /* Aparentemente deixa a linha mais fininha */
+  }
+
+  nav .menu ul li a.active {
+    font-weight: bold;
+    -webkit-font-smoothing: auto;
+  }
+
+  nav .icon-menu {
+    display: none;
+  }
+
+  /* HOME */
+  #home .container {
+    grid-auto-flow: column;
+    justify-content: space-between;
+    margin: 0 auto;
+  }
+
+  #home .image {
+    order: 1; /* É possível utilizar este order para alterar a ordem de itens dentro de uma caixa grid ou flex */
+  }
+
+  #home .text {
+    order: 0;
+    max-width: 24rem;
+    text-align: left;
+  }
+
+  /* ABOUT */
+  #about .container {
+    grid-auto-flow: column;
+    margin: 0 auto;
+  }
+
+  /* SERVICES */
+  .cards {
+    grid-template-columns: 1fr 1fr 1fr; /* fraction, algo flexível. Estou dividindo os 3 cards igualmente na tela. Se eu quisesse realçar algum deles, eu colocaria um valor diferente para o fraction, por exemplo "1fr 2fr 1fr"
+    OBS: Caso tivessem muitos elementos e não fosse possível enumerá-los um a um, poderia ser definido um padrão genérico. Exemplo: "1fr 1fr". Desta forma, os elementos seriam organizados 2 a 2 na tela.
+    */
+  }
+
+  .card {
+    padding-left: 3rem;
+    padding-right: 3rem;
+  }
+
+  /* TESTIMONIALS */
+  #testimonials .container {
+    margin-left: auto;
+    margin-right: auto;
+  }
+
+  /* CONTACT */
+  #contact .container {
+    grid-auto-flow: column;
+    align-items: center;
+  }
+
+  #contact .text {
+    max-width: 25rem;
+  }
+
+  /* FOOTER */
+  footer.section {
+    padding: 3.75rem 0;
+  }
+
+  footer .container {
+    grid-auto-flow: column;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  footer .logo {
+    font-size: 2.25rem;
+  }
+}
+
+/* extra large devices: 1200> */
+/* large devices: 1023> */
+/* large devices: 992> */
+/* medium devices: 767> */
+@media (min-width: 992px) {
+  /* O nome disso é breakpoint */
+  :root {
+    --title-font-size: 2.2rem;
+    --subtitle-font-size: 1.125rem;
+  }
+}
